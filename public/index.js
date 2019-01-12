@@ -146,6 +146,35 @@ const actors = [{
   }]
 }];
 
+function timeComponent(barId, time) {
+    let timeComponent = 0;
+    bars.forEach(doc => {
+        if (doc["id"] === barId) {
+            timeComponent = doc["pricePerHour"] * time;
+        }
+    });
+    return timeComponent;
+}
+
+function peopleComponent(barId, persons) {
+    let peopleComponent = 0;
+    bars.forEach(doc => {
+        if (doc["id"] === barId) {
+            peopleComponent = doc["pricePerPerson"] * persons;
+        }
+    });
+    return peopleComponent;
+}
+
+function setBookingPrice() {
+    events.forEach(doc => {
+        let time = timeComponent(doc["barId"], doc["time"]);
+        let people = peopleComponent(doc["barId"], doc["persons"]);
+        doc["price"]= time + people;
+    });
+}
+
+setBookingPrice();
 console.log(bars);
 console.log(events);
 console.log(actors);
