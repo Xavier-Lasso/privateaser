@@ -170,7 +170,18 @@ function setBookingPrice() {
     events.forEach(doc => {
         let time = timeComponent(doc["barId"], doc["time"]);
         let people = peopleComponent(doc["barId"], doc["persons"]);
-        doc["price"]= time + people;
+        let price = time + people;
+        let persons = doc["persons"];
+        if (persons >= 10 && persons < 20) {
+            price *= 0.9;
+        }
+        if (persons >= 20 && persons < 60) {
+            price *= 0.7;
+        }
+        if (persons >= 60) {
+            price *= 0.5;
+        }
+        doc["price"]= price;
     });
 }
 
