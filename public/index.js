@@ -185,7 +185,20 @@ function setBookingPrice() {
     });
 }
 
+function setCommission() {
+    events.forEach(doc => {
+        let commission = doc["price"] * 0.3;
+        let insurance = commission * 0.5;
+        let treasury = 1 * doc["persons"];
+        let privateaser = commission - insurance - treasury;
+        doc["commission"]["insurance"] = insurance;
+        doc["commission"]["treasury"] = treasury;
+        doc["commission"]["privateaser"] = privateaser;
+    });
+}
+
 setBookingPrice();
+setCommission();
 console.log(bars);
 console.log(events);
 console.log(actors);
