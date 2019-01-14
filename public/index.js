@@ -171,6 +171,8 @@ function setBookingPrice() {
         let time = timeComponent(doc["barId"], doc["time"]);
         let people = peopleComponent(doc["barId"], doc["persons"]);
         let price = time + people;
+
+        // Apply reductions
         let persons = doc["persons"];
         if (persons >= 10 && persons < 20) {
             price *= 0.9;
@@ -180,6 +182,11 @@ function setBookingPrice() {
         }
         if (persons >= 60) {
             price *= 0.5;
+        }
+
+        // Apply deductible option
+        if (doc["options"]["deductibleReduction"] === true) {
+            price += doc["persons"] * 1;
         }
         doc["price"]= price;
     });
