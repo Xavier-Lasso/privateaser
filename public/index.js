@@ -194,18 +194,57 @@ function setBookingPrice() {
 
 function setCommission() {
     events.forEach(doc => {
-        let commission = doc["price"] * 0.3;
+        let commission;
+        if (doc["options"]["deductibleReduction"] === true) {
+            commission = (doc["price"] - doc["persons"]) * 0.3;
+        }
+        else {
+            commission = doc["price"] * 0.3;
+        }
         let insurance = commission * 0.5;
         let treasury = 1 * doc["persons"];
-        let privateaser = commission - insurance - treasury;
+        let privateaser;
+        if (doc["options"]["deductibleReduction"] === true) {
+            privateaser = commission - insurance - treasury + doc["persons"];
+        }
+        else {
+            privateaser = commission - insurance - treasury;
+        }
         doc["commission"]["insurance"] = insurance;
         doc["commission"]["treasury"] = treasury;
         doc["commission"]["privateaser"] = privateaser;
     });
 }
 
+function getEvent(enventId) {
+    let event;
+    events.forEach(doc => {
+        if (doc["id"] === enventId) {
+            event = doc;
+        }
+    });
+    return event;
+}
+
+function setActors() {
+    actors.forEach( doc =>{
+        let event = getEvent(doc["eventId"]);
+        doc["payment"][0]["amount"] = event["price"];
+        if (event["options"]["deductibleReduction"] === true) {
+            doc["payment"][1]["amount"] = +(0.7 * (event["price"] - event["persons"])).toFixed(4);
+        }
+        else {
+            doc["payment"][1]["amount"] = +(0.7 * event["price"]).toFixed(4);
+        }
+        doc["payment"][2]["amount"] = event["commission"]["insurance"];
+        doc["payment"][3]["amount"] = event["commission"]["treasury"];
+        doc["payment"][4]["amount"] = event["commission"]["privateaser"];
+    });
+}
+
 setBookingPrice();
 setCommission();
+setActors();
 console.log(bars);
 console.log(events);
 console.log(actors);
